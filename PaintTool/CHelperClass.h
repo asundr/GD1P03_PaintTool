@@ -23,5 +23,6 @@ public:
 
 	sf::String SaveFile();
 	sf::String LoadFile();
+	void Setup();
 };
 
