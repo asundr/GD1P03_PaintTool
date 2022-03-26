@@ -12,6 +12,7 @@ public:
 	~BrushStamp();
 	void LoadFromFile(std::string path);
 	const sf::Texture& GetTexture() const;
+	bool HasSprite() const;
 	// Inherited via Brush
 	virtual void MouseDown(const sf::Vector2f& position, Layer& layer) override;
 	virtual Layer* Update(const sf::Vector2f& position, Layer& layer) override;

@@ -14,7 +14,7 @@
 /*
 Requirements:
     !Lines, !Boxes, !Ellipses, !polygons, +stamp, !fill
-    Menu options for: color, !width, !brush, !save, !load, (layers), (rotate), (crop)
+    Menu options for: color, !width, brush, !save, !load, (layers), (rotate), (crop)
     ! Rezising windows doesn't affect canvas
 Extras
     ! Save & laod
@@ -129,7 +129,7 @@ int main()
                 {
                     brush->MouseDown(MousePosition(window), *layers->at(focusLayer));
                 }
-                windowUpdate = true;
+                windowUpdate = true; 
             }
             else if (event.type == sf::Event::MouseButtonReleased)
             {

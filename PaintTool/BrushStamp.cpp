@@ -35,6 +35,11 @@ const sf::Texture& BrushStamp::GetTexture() const
     return *texture;
 }
 
+bool BrushStamp::HasSprite() const
+{
+    return sprite;
+}
+
 void BrushStamp::MouseDown(const sf::Vector2f& position, Layer& layer)
 {
     if (!sprite)

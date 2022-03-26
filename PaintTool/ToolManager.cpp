@@ -120,6 +120,21 @@ void ToolManager::Save(Canvas& canvas, std::vector<Layer*>& layers)
 	canvas.Save(layers, filePath);
 }
 
+std::string ToolManager::GetLoadString()
+{
+	CHelperClass winHelper;
+	std::string loadName = (std::string)winHelper.LoadFile();
+	if (loadName.length() != 0)
+	{
+		if (loadName.find_last_of('.') == -1)
+		{
+			loadName += ".png";
+		}
+		return loadName;
+	}
+	return "";
+}
+
 void ToolManager::LoadLayer(Canvas& canvas, std::vector<Layer*>& layers)
 {
 	CHelperClass winHelper;
@@ -130,8 +145,8 @@ void ToolManager::LoadLayer(Canvas& canvas, std::vector<Layer*>& layers)
 		{
 			loadName += ".png";
 		}
-		Layer* img = new Layer(canvas, (const std::string)loadName);
-		layers.push_back(img);
+		Layer* layer = new Layer(canvas, (const std::string)loadName);
+		layers.push_back(layer);
 	}
 }
 
@@ -158,7 +173,9 @@ void ToolManager::HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<L
 	{
 		switch (index)
 		{
-		case 0: case 1: case 2: case 3: case 4: case 5:	case 6: case 7:
+		case 6:
+			SetupBrushStamp();
+		case 0: case 1: case 2: case 3: case 4: case 5:	case 7:
 			SelectBrush((Brush::Type)index);
 			break;
 		case 9:
@@ -213,16 +230,11 @@ void ToolManager::DisplayUI(sf::RenderWindow& window) const
 {
 	sf::View documentView = window.getView();
 	window.setView(toolbarView);
-	//(window.getDefaultView());
 	for (int i = 0; i < toolCount; ++i)
 	{
 		window.draw(*buttons[i]);
 		window.draw(*textBoxes[i]);
-		//sf::Text label();
-
-		
 	}
-	//window.display();
 	window.setView(documentView);
 }
 
@@ -233,6 +245,19 @@ bool ToolManager::IsInBounds(const sf::Vector2f mousePos) const
 	return rect.contains(mousePos);
 }
 
+
+void ToolManager::SetupBrushStamp()
+{
+	BrushStamp* stamp = ((BrushStamp*)brushes[6]);
+	if (!stamp->HasSprite() || InputManager::ControlPressed())
+	{
+		std::string loadName = GetLoadString();
+		if (loadName.size())
+		{
+			stamp->LoadFromFile(loadName);
+		}
+	}
+}
 
 void ToolManager::InitializeUI()
 {
