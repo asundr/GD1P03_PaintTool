@@ -19,7 +19,7 @@
 
 /*
 Requirements:
-    !Lines, !Boxes, !Ellipses, +polygons, +stamp, !fill
+    !Lines, !Boxes, !Ellipses, !polygons, +stamp, !fill
     Menu options for: color, width, brush, +save, +load, (layers), (rotate), (crop)
     ! Rezising windows doesn't affect canvas
     (cursor)
@@ -34,7 +34,6 @@ A++
     Fill brush
     Layers: move, scale, rotate, show/hide w/ menu
     Rotate and crop caanvas
-    Cursor
 */
 
 void Resize(sf::RenderWindow& window, sf::Event& event);
@@ -45,7 +44,7 @@ void UpdatePanX(sf::RenderWindow& window, float direction);
 void UpdatePanY(sf::RenderWindow& window, float direction);
 sf::Vector2f MousePosition(sf::RenderWindow& window);
 
-void InitializeUI();
+void InitializeUI(sf::RenderWindow& window);
 void UpdateUI(sf::RenderWindow& window);
 
 void RenderWindow(sf::RenderWindow& window, Canvas* canvas, std::vector<Layer*>* layers);
@@ -55,16 +54,24 @@ void BatchCards(Canvas& canvas, std::vector<Layer*>& layers);
 int zoomLevel = 0; //TODO Add to camera obj
 std::vector<sf::Shape*> uiElementVector;    //TODO Move to UI class
 
+float thickness = 10.f;
+sf::Color color = sf::Color::Black;
+
 int main()
 {
-    //unsigned int width = 1000, height = 1000;     //TODO Reset
-    unsigned int width = 823, height = 1180;
+    unsigned int width = 1000, height = 1000;     //TODO Reset
+    //unsigned int width = 823, height = 1180;
     unsigned int focusLayer = 1;
     std::vector<Layer*>* layers = new std::vector<Layer*>();
     std::vector<Layer*> uiLayers;
 
+    
+    
+
     sf::RenderWindow window(sf::VideoMode(width, height), "NFT Generator"); //, sf::Style::Fullscreen);
     Canvas* canvas = new Canvas(width, height);
+
+
 
     //BatchCards(*canvas, *layers);
     //RenderWindow(window, canvas, layers);
@@ -88,7 +95,12 @@ int main()
     brush = ellipse;
 
     CHelperClass winHelper;
-    InitializeUI();
+    InitializeUI(window);
+
+    float toolbarHeight = 50.f * uiElementVector.size();
+
+    sf::View toolbarView(sf::FloatRect(0, 0, 150, toolbarHeight));
+    toolbarView.setViewport(sf::FloatRect(0.f, 0.f, 150.f / width, toolbarHeight / height));
 
     Layer* brushUI = nullptr;
     while (window.isOpen())
@@ -98,7 +110,7 @@ int main()
         bool windowUpdate = false;
         while (window.pollEvent(event))
         {
-            Layer* drawLayer = layers->at(focusLayer);
+            Layer* drawLayer = layers->at(focusLayer); // active layer being edited
             if (event.type == sf::Event::Closed)
             {
                 window.close();
@@ -106,8 +118,20 @@ int main()
             }
             if (event.type == sf::Event::Resized)
             {
+                
                 Resize(window, event);
-                //UpdateUI(window);
+                uiElementVector[0]->setScale(1.f, event.size.height);
+                toolbarView.setViewport(sf::FloatRect(0.f, 0.f, 150.f / event.size.width, toolbarHeight / event.size.height));
+                windowUpdate = true;
+            }
+
+
+            auto mousePos = sf::Vector2f(sf::Mouse::getPosition(window));
+            auto bounds = toolbarView.getSize();
+            sf::FloatRect rect(sf::Vector2f(0, 0), toolbarView.getSize());
+            if (rect.contains(mousePos))
+            {
+                
             }
             if (event.type == sf::Event::MouseWheelScrolled)
             {
@@ -132,10 +156,10 @@ int main()
                 {
                     UpdatePanX(window, event.mouseWheelScroll.delta);
                 }
+                windowUpdate = true;
             }
             if (event.type == sf::Event::MouseButtonPressed)
             {
-                //drawLayer->draw(*circle);
                 if (window.hasFocus())
                 {
                     if (uiElementVector[0]->getGlobalBounds().contains(MousePosition(window)))
@@ -171,7 +195,7 @@ int main()
                 float speed = InputManager::ShiftPressed() ? 10.f : 1.f;
                 if (event.key.code == sf::Keyboard::Right)
                 {
-                    drawLayer->move(sf::Vector2f(speed, 0.0f));
+                    drawLayer->move(sf::Vector2f(speed, 0.0f)); // TODO remove / add modifier for layer
                 }
                 else if (event.key.code == sf::Keyboard::Left)
                 {
@@ -196,7 +220,6 @@ int main()
                         }
                         canvas->Save(*layers,  saveName);
                     }
-                    //canvas->Save(*layers, "C:\\users\\user\\downloads\\canvas_test.png");
                 }
                 else
                 {
@@ -230,8 +253,9 @@ int main()
 
         canvas->RenderTexture()->clear();
         canvas->RenderTexture()->draw(*canvas->Sprite());
-        //if (windowUpdate)
-        //{
+        if (windowUpdate)
+        {
+            // Draw canvas
             for (Layer* l : *layers)
             {
                 canvas->RenderTexture()->draw(*l);
@@ -239,7 +263,6 @@ int main()
             if (brushUI)
                 canvas->RenderTexture()->draw(*brushUI);
             //brushUI = nullptr;
-            
             //for (int i = uiLayers.size() - 1; i >= 0; --i)
             //{
             //    canvas->RenderTexture()->draw(*uiLayers[i]);
@@ -247,12 +270,20 @@ int main()
             uiLayers.clear();
             window.clear();
             DrawRenderTexture(window, *canvas->RenderTexture());
-            for (auto shape : uiElementVector)
+
+
+            // Draw UI toolbars
+            sf::View documentView = window.getView();
+            window.setView(toolbarView);    //(window.getDefaultView());
+            for (sf::Shape* shape : uiElementVector)
             {
                 window.draw(*shape);
             }
             window.display();
-        //}
+            window.setView(documentView);
+
+
+        }
 
     }
 
@@ -262,29 +293,50 @@ int main()
     }
     delete layers;
 
-
-
     return 0;
 }
 
-void InitializeUI() //TODO add to UI class
+void InitializeUI(sf::RenderWindow& window) //TODO add to UI class
 {
-    sf::RectangleShape* exampleButton = new sf::RectangleShape();
-    exampleButton->setSize(sf::Vector2f(50, 30));
-    exampleButton->setFillColor(sf::Color::Red);
-    uiElementVector.push_back(exampleButton);
+    float buttonWidth = 150.f, buttonHeight = 50.f;
+    //sf::RectangleShape* buttonPanel = new sf::RectangleShape();
+    //buttonPanel->setSize(sf::Vector2f(50, window.getSize().y));
+    //buttonPanel->setFillColor(sf::Color(50, 50, 50, 255));
+    //uiElementVector.push_back(buttonPanel);
 
-    sf::RectangleShape* saveButton = new sf::RectangleShape();
-    saveButton->setSize(sf::Vector2f(50, 30));
-    saveButton->setPosition(sf::Vector2f(60, 0));
-    saveButton->setFillColor(sf::Color::Green);
-    uiElementVector.push_back(saveButton);
+    sf::Color grey(50, 50, 50, 255);
+    sf::Color lgrey(200, 200, 200, 255);
 
-    sf::RectangleShape* loadButton = new sf::RectangleShape();
-    loadButton->setSize(sf::Vector2f(50, 30));
-    loadButton->setPosition(sf::Vector2f(120, 0));
-    loadButton->setFillColor(sf::Color::Blue);
-    uiElementVector.push_back(loadButton);
+    const char* labels[] = {"Pencil", "Line", "Rectange", "Ellipse", "Polygon", 
+        "Stamp", "Fill", "Thickness", "Colour",  "Load", "Save"};
+
+    for (int i = 0; i < 11; ++i)
+    {
+        sf::RectangleShape* button = new sf::RectangleShape();
+        button->setSize(sf::Vector2f(150.f, 50.f));
+        button->setPosition(sf::Vector2f(0.f, i * 50.f));
+        button->setFillColor(grey);
+        button->setOutlineColor(lgrey);
+        button->setOutlineThickness(1.f);
+        uiElementVector.push_back(button);
+    }
+
+    //sf::RectangleShape* exampleButton = new sf::RectangleShape();
+    //exampleButton->setSize(sf::Vector2f(150, 50));
+    //exampleButton->setFillColor(sf::Color::Red);
+    //uiElementVector.push_back(exampleButton);
+    //
+    //sf::RectangleShape* saveButton = new sf::RectangleShape();
+    //saveButton->setSize(sf::Vector2f(150, 50));
+    //saveButton->setPosition(sf::Vector2f(0, 50));
+    //saveButton->setFillColor(sf::Color::Green);
+    //uiElementVector.push_back(saveButton);
+    //
+    //sf::RectangleShape* loadButton = new sf::RectangleShape();
+    //loadButton->setSize(sf::Vector2f(150, 50));
+    //loadButton->setPosition(sf::Vector2f(0, 100));
+    //loadButton->setFillColor(sf::Color::Blue);
+    //uiElementVector.push_back(loadButton);
 }
 
 void UpdateUI(sf::RenderWindow& window) //TODO add to UI class
@@ -369,6 +421,13 @@ void RenderWindow(sf::RenderWindow& window, Canvas* canvas, std::vector<Layer*>*
     DrawRenderTexture(window, *canvas->RenderTexture());
     //window.draw(*circle);
     window.display();
+}
+
+sf::Color SelectColor()
+{
+    sf::RenderWindow colorSelector(sf::VideoMode(255, 255), "Colour Selector");
+    //sf::
+    return sf::Color::Transparent;
 }
 
 #include <fstream>
