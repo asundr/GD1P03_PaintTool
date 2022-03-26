@@ -4,12 +4,12 @@
 
 void BrushFill::MouseDown(const sf::Vector2f& position, Layer& layer)
 {
-	unsigned int width = layer.GetSize().x, height = layer.GetSize().y;
-	unsigned int x = (unsigned int)position.x, y = (unsigned int)position.y;
+	int width = layer.GetSize().x, height = layer.GetSize().y;
+	int x = (int)position.x, y = (int)position.y;
 	sf::Image img = layer.CopyToImage();
 	if (img.getPixel(x, y) == color)
 		return;
-	std::queue<std::pair<unsigned int, unsigned int>> queue;
+	std::queue<std::pair<int, int>> queue;
 	queue.push(std::pair<int, int>(x, y));
 	while (!queue.empty())
 	{
@@ -45,6 +45,7 @@ Layer* BrushFill::Update(const sf::Vector2f& position, Layer& layer)
     return nullptr;
 }
 
-void BrushFill::MouseUp(const sf::Vector2f& position, Layer& layer)
+Layer* BrushFill::MouseUp(const sf::Vector2f& position, Layer& layer)
 {
+	return nullptr;
 }

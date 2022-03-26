@@ -46,10 +46,10 @@ Layer* BrushEllipse::Update(const sf::Vector2f& position, Layer& layer)
 	return overlay;
 }
 
-void BrushEllipse::MouseUp(const sf::Vector2f& position, Layer& layer)
+Layer* BrushEllipse::MouseUp(const sf::Vector2f& position, Layer& layer)
 {
 	if (!start)
-		return;
+		return nullptr;
 
 	sf::Vector2f dif = Subtract(position, *start);
 	sf::Vector2f origin = sf::Vector2f(fminf(start->x, position.x), fminf(start->y, position.y));
@@ -69,4 +69,5 @@ void BrushEllipse::MouseUp(const sf::Vector2f& position, Layer& layer)
 	start = 0;
 	delete overlay;
 	overlay = 0;
+	return nullptr;
 }

@@ -32,7 +32,7 @@ public:
 	int GetSize() const;
 	virtual void MouseDown(const sf::Vector2f& position, Layer& layer) = 0;
 	virtual Layer* Update(const sf::Vector2f& position, Layer& layer) = 0;
-	virtual void MouseUp(const sf::Vector2f& position, Layer& layer) = 0;
+	virtual Layer* MouseUp(const sf::Vector2f& position, Layer& layer) = 0;
 protected:
 	static sf::Vector2f Subtract(const sf::Vector2f& a, const sf::Vector2f& b);
 	void DrawLine(const sf::Vector2f& a, const sf::Vector2f& b, Layer& layer, sf::Shape& shape);

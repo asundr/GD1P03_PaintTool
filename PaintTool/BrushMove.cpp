@@ -40,11 +40,12 @@ Layer* BrushMove::Update(const sf::Vector2f& position, Layer& layer)
 	return overlay;
 }
 
-void BrushMove::MouseUp(const sf::Vector2f& position, Layer& layer)
+Layer* BrushMove::MouseUp(const sf::Vector2f& position, Layer& layer)
 {
 	//sf::Vector2f dif = Subtract(position, *start);
 	delete layerStart;
 	delete start;
 	layerStart = 0;
 	start = 0;
+	return nullptr;
 }

@@ -42,18 +42,18 @@ Layer* BrushPolygon::Update(const sf::Vector2f& position, Layer& layer)
 
     sf::CircleShape placeholder;
 
-    for (int i = 0; i < points.size() - 1; ++i)
+    for (unsigned int i = 0; i < points.size() - 1; ++i)
     {
         DrawLine(points[i], points[(i + 1) % points.size()], *overlay, placeholder);
     }
     return overlay;
 }
 
-void BrushPolygon::MouseUp(const sf::Vector2f& position, Layer& layer)
+Layer* BrushPolygon::MouseUp(const sf::Vector2f& position, Layer& layer)
 {
     if (points.empty())
     {
-        return;
+        return nullptr;
     }
     sf::Vector2f dif = Subtract(position, points[0]);
     float distance = sqrtf(dif.x * dif.x + dif.y * dif.y);
@@ -63,7 +63,7 @@ void BrushPolygon::MouseUp(const sf::Vector2f& position, Layer& layer)
         sf::CircleShape placeholder;
         placeholder.setOutlineColor(color);
 
-        for (int i = 0; i < points.size(); ++i)
+        for (unsigned int i = 0; i < points.size(); ++i)
         {
             DrawLine(points[i], points[(i + 1) % points.size()], layer, placeholder);
         }
@@ -71,4 +71,5 @@ void BrushPolygon::MouseUp(const sf::Vector2f& position, Layer& layer)
         delete overlay;
         overlay = 0;
     }
+    return overlay;
 }

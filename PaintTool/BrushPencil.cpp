@@ -38,8 +38,9 @@ Layer* BrushPencil::Update(const sf::Vector2f& position, Layer& layer)
 	return overlay;
 }
 
-void BrushPencil::MouseUp(const sf::Vector2f& position, Layer& layer)
+Layer* BrushPencil::MouseUp(const sf::Vector2f& position, Layer& layer)
 {
 	delete start;
 	start = 0;
+	return nullptr;
 }

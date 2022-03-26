@@ -170,9 +170,9 @@ int main()
             }
             else if (event.type == sf::Event::MouseButtonReleased)
             {
-                brush->MouseUp(MousePosition(window), *layers->at(focusLayer));
+                brushUI = brush->MouseUp(MousePosition(window), *layers->at(focusLayer));
                 windowUpdate = true;
-                brushUI = 0;
+                //brushUI = 0;
             }
 
             if (event.type == sf::Event::KeyPressed)
@@ -230,7 +230,7 @@ int main()
             }
 
 
-            if (InputManager::MouseLeftPressed())
+            if (InputManager::MouseLeftPressed() || brushUI)
             {
                 brushUI = brush->Update(MousePosition(window), *layers->at(focusLayer));
                 windowUpdate = true;

@@ -37,10 +37,10 @@ Layer* BrushLine::Update(const sf::Vector2f& position, Layer& layer)
 	return overlay;
 }
 
-void BrushLine::MouseUp(const sf::Vector2f& position, Layer& layer)
+Layer* BrushLine::MouseUp(const sf::Vector2f& position, Layer& layer)
 {
 	if (!start)
-		return;
+		return nullptr;
 	sf::CircleShape circle((float)size/2.f);
 	circle.setFillColor(color);
 	circle.setOutlineColor(color);
@@ -49,4 +49,5 @@ void BrushLine::MouseUp(const sf::Vector2f& position, Layer& layer)
 	start = 0;
 	delete overlay;
 	overlay = 0;
+	return nullptr;
 }
