@@ -147,19 +147,6 @@ int main()
                 {
                     focusLayer = (focusLayer - 1) % layers->size();
                 }
-                //else if (event.key.code == sf::Keyboard::S && InputManager::ControlPressed())
-                //{
-                //    toolManager.Save(*canvas, *layers);
-                //}
-                //else
-                //{
-                //    int num = (int)event.key.code - (int)sf::Keyboard::Num1;
-                //    if (num >= 0 && num < 8)
-                //    {
-                //        toolManager.SelectBrush((Brush::Type)num);
-                //        brush = &toolManager.GetCurrentBrush();
-                //    }
-                //}
                 toolManager.HandleKeyEvent(event, *canvas, *layers);
                 windowUpdate = true;
             }
