@@ -153,6 +153,7 @@
     <ClCompile Include="BrushMove.cpp" />
     <ClCompile Include="BrushPencil.cpp" />
     <ClCompile Include="BrushPolygon.cpp" />
+    <ClCompile Include="BrushStamp.cpp" />
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="CHelperClass.cpp" />
     <ClCompile Include="EllipseShape.cpp" />
@@ -161,6 +162,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Brush.cpp" />
     <ClCompile Include="BrushBox.cpp" />
+    <ClCompile Include="ToolManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BrushEllipse.h" />
@@ -169,6 +171,7 @@
     <ClInclude Include="BrushMove.h" />
     <ClInclude Include="BrushPencil.h" />
     <ClInclude Include="BrushPolygon.h" />
+    <ClInclude Include="BrushStamp.h" />
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="CHelperClass.h" />
     <ClInclude Include="EllipseShape.h" />
@@ -176,6 +179,7 @@
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Brush.h" />
     <ClInclude Include="BrushBox.h" />
+    <ClInclude Include="ToolManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

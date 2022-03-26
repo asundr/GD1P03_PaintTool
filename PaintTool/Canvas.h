@@ -26,6 +26,7 @@ public:
 	sf::RenderTexture* RenderTexture(); // TODO replace this and sprite accessor
 	sf::Sprite* Sprite();
 	void Resize(int newWidth, int newHeight);
+	void clear();
 	void draw(const sf::Drawable& drawable, const sf::RenderStates& states = sf::RenderStates::Default);
 	void Save(const std::vector<Layer*>& layers, std::string path);
 };

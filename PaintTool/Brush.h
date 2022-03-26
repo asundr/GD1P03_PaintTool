@@ -7,21 +7,23 @@ class Layer;
 
 class Brush
 {
-	enum Type
+public:
+	enum class Type
 	{
 		GRAB,
 		PENCIL,
 		LINE,
 		BOX,
-		ELLIPSES,
+		ELLIPSE,
 		POLYGON,
+		STAMP,
 		FILL
 	};
 private:
 	//Type type; //TODO unused
 protected:
 	sf::Color color;
-	int size;
+	int size;		// TODO make float
 	Layer* overlay;
 public:
 	Brush(int size = 10, sf::Color = sf::Color::Black);

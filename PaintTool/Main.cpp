@@ -6,13 +6,8 @@
 #include "InputManager.h"
 
 #include "Brush.h"
-#include "BrushMove.h"
-#include "BrushLine.h"
-#include "BrushPencil.h"
-#include "BrushBox.h"
-#include "BrushEllipse.h"
-#include "BrushFill.h"
-#include "BrushPolygon.h"
+
+#include "ToolManager.h"
 
 #include <iostream>
 #include "CHelperClass.h"
@@ -44,17 +39,14 @@ void UpdatePanX(sf::RenderWindow& window, float direction);
 void UpdatePanY(sf::RenderWindow& window, float direction);
 sf::Vector2f MousePosition(sf::RenderWindow& window);
 
-void InitializeUI(sf::RenderWindow& window);
-void UpdateUI(sf::RenderWindow& window);
-
 void RenderWindow(sf::RenderWindow& window, Canvas* canvas, std::vector<Layer*>* layers);
 
 void BatchCards(Canvas& canvas, std::vector<Layer*>& layers);
 
 int zoomLevel = 0; //TODO Add to camera obj
-std::vector<sf::Shape*> uiElementVector;    //TODO Move to UI class
+//std::vector<sf::Shape*> uiElementVector;    //TODO Move to UI class
 
-float thickness = 10.f;
+float sizez = 10.f;
 sf::Color color = sf::Color::Black;
 
 int main()
@@ -63,14 +55,14 @@ int main()
     //unsigned int width = 823, height = 1180;
     unsigned int focusLayer = 1;
     std::vector<Layer*>* layers = new std::vector<Layer*>();
-    std::vector<Layer*> uiLayers;
-
-    
-    
 
     sf::RenderWindow window(sf::VideoMode(width, height), "NFT Generator"); //, sf::Style::Fullscreen);
+    ToolManager toolManager;
+    toolManager.UpdateView(window);
     Canvas* canvas = new Canvas(width, height);
+    CHelperClass winHelper;
 
+    Brush* brush = &toolManager.GetCurrentBrush();
 
 
     //BatchCards(*canvas, *layers);
@@ -80,27 +72,7 @@ int main()
 
     layers->push_back(new Layer(*canvas, "C:\\users\\user\\downloads\\image.png"));   // guts
     
-
-    //Layer* drawLayer = new Layer(*canvas);
     layers->push_back(new Layer(*canvas));
-
-    Brush* brush;
-    Brush* pencil = new BrushPencil();
-    Brush* grab = new BrushMove();
-    Brush* line = new BrushLine();
-    Brush* box = new BrushBox();
-    Brush* ellipse = new BrushEllipse();
-    Brush* polygon = new BrushPolygon();
-    Brush* fill = new BrushFill();
-    brush = ellipse;
-
-    CHelperClass winHelper;
-    InitializeUI(window);
-
-    float toolbarHeight = 50.f * uiElementVector.size();
-
-    sf::View toolbarView(sf::FloatRect(0, 0, 150, toolbarHeight));
-    toolbarView.setViewport(sf::FloatRect(0.f, 0.f, 150.f / width, toolbarHeight / height));
 
     Layer* brushUI = nullptr;
     while (window.isOpen())
@@ -111,6 +83,7 @@ int main()
         while (window.pollEvent(event))
         {
             Layer* drawLayer = layers->at(focusLayer); // active layer being edited
+            brush = &toolManager.GetCurrentBrush();
             if (event.type == sf::Event::Closed)
             {
                 window.close();
@@ -118,20 +91,15 @@ int main()
             }
             if (event.type == sf::Event::Resized)
             {
-                
                 Resize(window, event);
-                uiElementVector[0]->setScale(1.f, event.size.height);
-                toolbarView.setViewport(sf::FloatRect(0.f, 0.f, 150.f / event.size.width, toolbarHeight / event.size.height));
+                toolManager.UpdateView(window);
                 windowUpdate = true;
             }
 
-
-            auto mousePos = sf::Vector2f(sf::Mouse::getPosition(window));
-            auto bounds = toolbarView.getSize();
-            sf::FloatRect rect(sf::Vector2f(0, 0), toolbarView.getSize());
-            if (rect.contains(mousePos))
+            if (toolManager.IsInBounds(MousePosition(window)))
             {
-                
+                toolManager.HandleMenuEvent(event, MousePosition(window));
+                continue;
             }
             if (event.type == sf::Event::MouseWheelScrolled)
             {
@@ -162,7 +130,8 @@ int main()
             {
                 if (window.hasFocus())
                 {
-                    if (uiElementVector[0]->getGlobalBounds().contains(MousePosition(window)))
+                    //if (uiElementVector[0]->getGlobalBounds().contains(MousePosition(window)))
+                    if (false) //TODO move to toolMAnager
                     {
                         std::string loadName = (std::string)winHelper.LoadFile();
                         if (loadName.length() != 0)
@@ -180,14 +149,12 @@ int main()
                         brush->MouseDown(MousePosition(window), *layers->at(focusLayer));
                     }
                 }
-                UpdateUI(window);
                 windowUpdate = true;
             }
             else if (event.type == sf::Event::MouseButtonReleased)
             {
                 brushUI = brush->MouseUp(MousePosition(window), *layers->at(focusLayer));
                 windowUpdate = true;
-                //brushUI = 0;
             }
 
             if (event.type == sf::Event::KeyPressed)
@@ -223,22 +190,11 @@ int main()
                 }
                 else
                 {
-                    switch (event.key.code)
+                    int num = (int)event.key.code - (int)sf::Keyboard::Num1;
+                    if (num >= 0 && num < 8)
                     {
-                    case sf::Keyboard::Num1:
-                        brush = grab; break;
-                    case sf::Keyboard::Num2:
-                        brush = pencil; break;
-                    case sf::Keyboard::Num3:
-                        brush = line; break;
-                    case sf::Keyboard::Num4:
-                        brush = box; break;
-                    case sf::Keyboard::Num5:
-                        brush = ellipse; break;
-                    case sf::Keyboard::Num6:
-                        brush = polygon; break;
-                    case sf::Keyboard::Num7:
-                        brush = fill; break;
+                        toolManager.SelectBrush((Brush::Type)num);
+                        brush = &toolManager.GetCurrentBrush();
                     }
                 }
             }
@@ -251,40 +207,23 @@ int main()
             }
         }
 
-        canvas->RenderTexture()->clear();
-        canvas->RenderTexture()->draw(*canvas->Sprite());
-        if (windowUpdate)
-        {
-            // Draw canvas
-            for (Layer* l : *layers)
+        //if (windowUpdate)
+        //{
+            canvas->clear();
+            canvas->draw(*canvas->Sprite());
+            for (Layer* layer : *layers)
             {
-                canvas->RenderTexture()->draw(*l);
+                canvas->draw(*layer);
             }
             if (brushUI)
-                canvas->RenderTexture()->draw(*brushUI);
-            //brushUI = nullptr;
-            //for (int i = uiLayers.size() - 1; i >= 0; --i)
-            //{
-            //    canvas->RenderTexture()->draw(*uiLayers[i]);
-            //}
-            uiLayers.clear();
+            {
+                canvas->draw(*brushUI);
+            }
             window.clear();
             DrawRenderTexture(window, *canvas->RenderTexture());
-
-
-            // Draw UI toolbars
-            sf::View documentView = window.getView();
-            window.setView(toolbarView);    //(window.getDefaultView());
-            for (sf::Shape* shape : uiElementVector)
-            {
-                window.draw(*shape);
-            }
+            toolManager.DisplayUI(window);
             window.display();
-            window.setView(documentView);
-
-
-        }
-
+        //}
     }
 
     for (Layer* l : *layers)
@@ -294,60 +233,6 @@ int main()
     delete layers;
 
     return 0;
-}
-
-void InitializeUI(sf::RenderWindow& window) //TODO add to UI class
-{
-    float buttonWidth = 150.f, buttonHeight = 50.f;
-    //sf::RectangleShape* buttonPanel = new sf::RectangleShape();
-    //buttonPanel->setSize(sf::Vector2f(50, window.getSize().y));
-    //buttonPanel->setFillColor(sf::Color(50, 50, 50, 255));
-    //uiElementVector.push_back(buttonPanel);
-
-    sf::Color grey(50, 50, 50, 255);
-    sf::Color lgrey(200, 200, 200, 255);
-
-    const char* labels[] = {"Pencil", "Line", "Rectange", "Ellipse", "Polygon", 
-        "Stamp", "Fill", "Thickness", "Colour",  "Load", "Save"};
-
-    for (int i = 0; i < 11; ++i)
-    {
-        sf::RectangleShape* button = new sf::RectangleShape();
-        button->setSize(sf::Vector2f(150.f, 50.f));
-        button->setPosition(sf::Vector2f(0.f, i * 50.f));
-        button->setFillColor(grey);
-        button->setOutlineColor(lgrey);
-        button->setOutlineThickness(1.f);
-        uiElementVector.push_back(button);
-    }
-
-    //sf::RectangleShape* exampleButton = new sf::RectangleShape();
-    //exampleButton->setSize(sf::Vector2f(150, 50));
-    //exampleButton->setFillColor(sf::Color::Red);
-    //uiElementVector.push_back(exampleButton);
-    //
-    //sf::RectangleShape* saveButton = new sf::RectangleShape();
-    //saveButton->setSize(sf::Vector2f(150, 50));
-    //saveButton->setPosition(sf::Vector2f(0, 50));
-    //saveButton->setFillColor(sf::Color::Green);
-    //uiElementVector.push_back(saveButton);
-    //
-    //sf::RectangleShape* loadButton = new sf::RectangleShape();
-    //loadButton->setSize(sf::Vector2f(150, 50));
-    //loadButton->setPosition(sf::Vector2f(0, 100));
-    //loadButton->setFillColor(sf::Color::Blue);
-    //uiElementVector.push_back(loadButton);
-}
-
-void UpdateUI(sf::RenderWindow& window) //TODO add to UI class
-{
-    for (unsigned int i = 0; i < uiElementVector.size(); ++i)
-    {
-        if (uiElementVector[i]->getGlobalBounds().contains(MousePosition(window)))
-        {
-            //std::cout << "button pressed" << std::endl;
-        }
-    }
 }
 
 void Resize(sf::RenderWindow& window, sf::Event& event)

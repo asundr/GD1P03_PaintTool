@@ -55,6 +55,11 @@ void Canvas::Resize(int newWidth, int newHeight)
     //TODO
 }
 
+void Canvas::clear()
+{
+    rTexture->clear(sf::Color::Transparent);
+}
+
 void Canvas::draw(const sf::Drawable& drawable, const sf::RenderStates& states)
 {
     rTexture->draw(drawable, states);
