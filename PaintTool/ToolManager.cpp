@@ -1,3 +1,6 @@
+#include "Canvas.h"
+#include "Layer.h"
+
 #include "BrushMove.h"
 #include "BrushPencil.h"
 #include "BrushLine.h"
@@ -7,10 +10,11 @@
 #include "BrushStamp.h"
 #include "BrushFill.h"
 
+#include "CHelperClass.h"
 #include "InputManager.h"
 #include "ToolManager.h"
 
-ToolManager::ToolManager() : selectedBrush(0), size(5)
+ToolManager::ToolManager() : selectedBrush(0), size(5), filePath("")
 {
 	if (!font.loadFromFile("FreeSans.otf"))
 	{
@@ -92,8 +96,47 @@ void ToolManager::SelectBrush(Brush::Type type)
 	}
 }
 
+void ToolManager::SaveAs(Canvas& canvas, std::vector<Layer*>& layers)
+{
+	CHelperClass winHelper;
+	std::string saveName = (std::string)winHelper.SaveFile();
+	if (saveName.length() != 0)
+	{
+		if (saveName.find_last_of('.') == -1)
+		{
+			saveName += ".png";
+		}
+		filePath = saveName;
+		Save(canvas, layers);
+	}
+}
+
+void ToolManager::Save(Canvas& canvas, std::vector<Layer*>& layers)
+{
+	if (filePath.length() == 0)
+	{
+		SaveAs(canvas, layers);
+	}
+	canvas.Save(layers, filePath);
+}
+
+void ToolManager::LoadLayer(Canvas& canvas, std::vector<Layer*>& layers)
+{
+	CHelperClass winHelper;
+	std::string loadName = (std::string)winHelper.LoadFile();
+	if (loadName.length() != 0)
+	{
+		if (loadName.find_last_of('.') == -1)
+		{
+			loadName += ".png";
+		}
+		Layer* img = new Layer(canvas, (const std::string)loadName);
+		layers.push_back(img);
+	}
+}
+
 #include <iostream> // TODO remove
-void ToolManager::HandleMenuEvent(sf::Event event, const sf::Vector2f& position)
+void ToolManager::HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<Layer*>& layers, const sf::Vector2f& position)
 {
 	int index = 0;
 	for (; index < toolCount; ++index)
@@ -109,24 +152,23 @@ void ToolManager::HandleMenuEvent(sf::Event event, const sf::Vector2f& position)
 	}
 
 	
-	std::cout <<  index << std::endl;
+	//std::cout <<  index << std::endl;
 
 	if (event.type == sf::Event::MouseButtonReleased)
 	{
 		switch (index)
 		{
 		case 0: case 1: case 2: case 3: case 4: case 5:	case 6: case 7:
-			// if mousedown
 			SelectBrush((Brush::Type)index);
 			break;
 		case 9:
 			// color selector
 			break;
 		case 10:
-			// load 
+			LoadLayer(canvas, layers);
 			break;
 		case 11:
-			// save
+			SaveAs(canvas, layers);
 			break;
 		}
 	}
@@ -181,7 +223,7 @@ void ToolManager::InitializeUI()
 	}
 
 	static const char* labels[] = { "Move", "Pencil", "Line", "Box", "Ellipse", "Polygon",
-	   "Stamp", "Fill", "Thickness", "Colour",  "Load", "Save" };
+	   "Stamp", "Fill", "Thickness", "Colour",  "Load Layer", "Save As" };
 
 	
 	for (int i = 0; i < toolCount; ++i)

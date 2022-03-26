@@ -3,6 +3,8 @@
 #include "SFML/Graphics.hpp"
 #include "Brush.h"
 
+class Canvas;
+
 class ToolManager
 {
 private:
@@ -15,6 +17,7 @@ private:
 	sf::Color color;
 	sf::View toolbarView;
 	sf::Font font;
+	std::string filePath;
 public:
 	ToolManager();
 	~ToolManager();
@@ -25,7 +28,10 @@ public:
 	sf::Color GetColor() const;
 	bool IsInBounds(const sf::Vector2f position) const;
 	void SelectBrush(Brush::Type type);
-	void HandleMenuEvent(sf::Event event, const sf::Vector2f& position);
+	void SaveAs(Canvas& canvas, std::vector<Layer*>& layers);
+	void HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<Layer*>& layers, const sf::Vector2f& position);
+	void Save(Canvas& canvas, std::vector<Layer*>& layers);
+	void LoadLayer(Canvas& canvas, std::vector<Layer*>& layers);
 	void UpdateView(sf::RenderWindow& window);
 	void UpdateView(unsigned int width, unsigned int height);
 	void DisplayUI(sf::RenderWindow& window) const;

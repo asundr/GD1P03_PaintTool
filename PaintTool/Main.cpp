@@ -10,12 +10,11 @@
 #include "ToolManager.h"
 
 #include <iostream>
-#include "CHelperClass.h"
 
 /*
 Requirements:
     !Lines, !Boxes, !Ellipses, !polygons, +stamp, !fill
-    Menu options for: color, width, brush, +save, +load, (layers), (rotate), (crop)
+    Menu options for: color, !width, !brush, +save, +load, (layers), (rotate), (crop)
     ! Rezising windows doesn't affect canvas
     (cursor)
 Extras
@@ -60,7 +59,6 @@ int main()
     ToolManager toolManager;
     toolManager.UpdateView(window);
     Canvas* canvas = new Canvas(width, height);
-    CHelperClass winHelper;
 
     Brush* brush = &toolManager.GetCurrentBrush();
 
@@ -96,9 +94,10 @@ int main()
                 windowUpdate = true;
             }
 
-            if (toolManager.IsInBounds(MousePosition(window)))
+            if (toolManager.IsInBounds(sf::Vector2f(sf::Mouse::getPosition(window))))
             {
-                toolManager.HandleMenuEvent(event, MousePosition(window));
+                toolManager.HandleMenuEvent(event, *canvas, *layers, sf::Vector2f(sf::Mouse::getPosition(window)));
+                windowUpdate = true;
                 continue;
             }
             if (event.type == sf::Event::MouseWheelScrolled)
@@ -131,23 +130,23 @@ int main()
                 if (window.hasFocus())
                 {
                     //if (uiElementVector[0]->getGlobalBounds().contains(MousePosition(window)))
-                    if (false) //TODO move to toolMAnager
-                    {
-                        std::string loadName = (std::string)winHelper.LoadFile();
-                        if (loadName.length() != 0)
-                        {
-                            if (loadName.find_last_of('.') == -1)
-                            {
-                                loadName += ".png";
-                            }
-                            Layer* img = new Layer(*canvas, (const std::string)loadName);
-                            layers->push_back(img);
-                        }
-                    }
-                    else
-                    {
+                    //if (false) //TODO move to toolMAnager
+                    //{
+                        //std::string loadName = (std::string)winHelper.LoadFile();
+                        //if (loadName.length() != 0)
+                        //{
+                        //    if (loadName.find_last_of('.') == -1)
+                        //    {
+                        //        loadName += ".png";
+                        //    }
+                        //    Layer* img = new Layer(*canvas, (const std::string)loadName);
+                        //    layers->push_back(img);
+                        //}
+                    //}
+                    //else
+                    //{
                         brush->MouseDown(MousePosition(window), *layers->at(focusLayer));
-                    }
+                   // }
                 }
                 windowUpdate = true;
             }
@@ -178,15 +177,16 @@ int main()
                 }
                 else if (event.key.code == sf::Keyboard::S && InputManager::ControlPressed())
                 {
-                    std::string saveName = (std::string)winHelper.SaveFile();
-                    if (saveName.length() != 0)
-                    {
-                        if (saveName.find_last_of('.') == -1)
-                        {
-                            saveName += ".png";
-                        }
-                        canvas->Save(*layers,  saveName);
-                    }
+                    //std::string saveName = (std::string)winHelper.SaveFile();
+                    //if (saveName.length() != 0)
+                    //{
+                    //    if (saveName.find_last_of('.') == -1)
+                    //    {
+                    //        saveName += ".png";
+                    //    }
+                    //    canvas->Save(*layers,  saveName);
+                    //}
+                    toolManager.Save(*canvas, *layers);
                 }
                 else
                 {
