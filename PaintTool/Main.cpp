@@ -14,20 +14,19 @@
 /*
 Requirements:
     !Lines, !Boxes, !Ellipses, !polygons, +stamp, !fill
-    Menu options for: color, !width, !brush, +save, +load, (layers), (rotate), (crop)
+    Menu options for: color, !width, !brush, !save, !load, (layers), (rotate), (crop)
     ! Rezising windows doesn't affect canvas
-    (cursor)
 Extras
-    Save & laod
-    draw poly
+    ! Save & laod
+    ! draw poly
     bitmap stamps for paiting
     standard colour dialogue
         Add these options to the menu
 A++
-    + Camera: Zoom, pan
-    Fill brush
-    Layers: move, scale, rotate, show/hide w/ menu
-    Rotate and crop caanvas
+    ! Camera: Zoom, pan
+    ! Fill brush
+    Layers: move, show/hide w/ menu
+    Rotate and crop canvas
 */
 
 void Resize(sf::RenderWindow& window, sf::Event& event);
@@ -43,7 +42,6 @@ void RenderWindow(sf::RenderWindow& window, Canvas* canvas, std::vector<Layer*>*
 void BatchCards(Canvas& canvas, std::vector<Layer*>& layers);
 
 int zoomLevel = 0; //TODO Add to camera obj
-//std::vector<sf::Shape*> uiElementVector;    //TODO Move to UI class
 
 float sizez = 10.f;
 sf::Color color = sf::Color::Black;
@@ -55,7 +53,7 @@ int main()
     unsigned int focusLayer = 1;
     std::vector<Layer*>* layers = new std::vector<Layer*>();
 
-    sf::RenderWindow window(sf::VideoMode(width, height), "NFT Generator"); //, sf::Style::Fullscreen);
+    sf::RenderWindow window(sf::VideoMode(width, height), "NFT Generator");
     ToolManager toolManager;
     toolManager.UpdateView(window);
     Canvas* canvas = new Canvas(width, height);
@@ -129,24 +127,7 @@ int main()
             {
                 if (window.hasFocus())
                 {
-                    //if (uiElementVector[0]->getGlobalBounds().contains(MousePosition(window)))
-                    //if (false) //TODO move to toolMAnager
-                    //{
-                        //std::string loadName = (std::string)winHelper.LoadFile();
-                        //if (loadName.length() != 0)
-                        //{
-                        //    if (loadName.find_last_of('.') == -1)
-                        //    {
-                        //        loadName += ".png";
-                        //    }
-                        //    Layer* img = new Layer(*canvas, (const std::string)loadName);
-                        //    layers->push_back(img);
-                        //}
-                    //}
-                    //else
-                    //{
-                        brush->MouseDown(MousePosition(window), *layers->at(focusLayer));
-                   // }
+                    brush->MouseDown(MousePosition(window), *layers->at(focusLayer));
                 }
                 windowUpdate = true;
             }
@@ -177,15 +158,6 @@ int main()
                 }
                 else if (event.key.code == sf::Keyboard::S && InputManager::ControlPressed())
                 {
-                    //std::string saveName = (std::string)winHelper.SaveFile();
-                    //if (saveName.length() != 0)
-                    //{
-                    //    if (saveName.find_last_of('.') == -1)
-                    //    {
-                    //        saveName += ".png";
-                    //    }
-                    //    canvas->Save(*layers,  saveName);
-                    //}
                     toolManager.Save(*canvas, *layers);
                 }
                 else
@@ -207,8 +179,8 @@ int main()
             }
         }
 
-        //if (windowUpdate)
-        //{
+        if (windowUpdate)
+        {
             canvas->clear();
             canvas->draw(*canvas->Sprite());
             for (Layer* layer : *layers)
@@ -223,7 +195,7 @@ int main()
             DrawRenderTexture(window, *canvas->RenderTexture());
             toolManager.DisplayUI(window);
             window.display();
-        //}
+        }
     }
 
     for (Layer* l : *layers)
@@ -294,25 +266,9 @@ void RenderWindow(sf::RenderWindow& window, Canvas* canvas, std::vector<Layer*>*
     {
         canvas->RenderTexture()->draw(*l);
     }
-    //if (brushUI)
-    //    canvas->RenderTexture()->draw(*brushUI);
-    //brushUI = nullptr;
-    //for (int i = uiLayers.size() - 1; i >= 0; --i)
-    //{
-    //    canvas->RenderTexture()->draw(*uiLayers[i]);
-    //}
-    //uiLayers.clear();
     window.clear();
     DrawRenderTexture(window, *canvas->RenderTexture());
-    //window.draw(*circle);
     window.display();
-}
-
-sf::Color SelectColor()
-{
-    sf::RenderWindow colorSelector(sf::VideoMode(255, 255), "Colour Selector");
-    //sf::
-    return sf::Color::Transparent;
 }
 
 #include <fstream>
