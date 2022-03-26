@@ -7,6 +7,7 @@ class BrushMove : public Brush
 protected:
 	sf::Vector2f* start;
 	sf::Vector2f* layerStart;
+	sf::Sprite* spriteUI;
 
 public:
 	BrushMove();

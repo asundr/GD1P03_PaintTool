@@ -1,7 +1,7 @@
 #include "Canvas.h"
 #include "Layer.h"
 
-Layer::Layer(unsigned int width, unsigned int height)
+Layer::Layer(unsigned int width, unsigned int height) :hidden(0)
 {
 	rTexture = new sf::RenderTexture();
 	rTexture->create(width, height);
@@ -16,9 +16,10 @@ Layer::Layer(Canvas& canvas) : Layer(canvas.Width(), canvas.Height())
 }
 
 // Create layer from image file
-Layer::Layer(Canvas& canvas, const std::string path) // TODO Remove canvas argument
+Layer::Layer(Canvas& canvas, const std::string path) : hidden(0)// TODO Remove canvas argument
 {
 	sf::Texture* texture = new sf::Texture();
+
 	if (!texture->loadFromFile(path))
 	{
 		//Layer(canvas);
@@ -28,7 +29,8 @@ Layer::Layer(Canvas& canvas, const std::string path) // TODO Remove canvas argum
 	}
 	rTexture = new sf::RenderTexture();
 	sprite = new sf::Sprite(*texture);
-	rTexture->create(texture->getSize().x, texture->getSize().y);
+	sf::Vector2u size = sf::Vector2u(std::max(texture->getSize().x, canvas.Width()), std::max(texture->getSize().y, canvas.Height()));
+	rTexture->create(size.x, size.y);
 	rTexture->draw(*sprite);
 	delete sprite;
 	sprite = new sf::Sprite(rTexture->getTexture());
@@ -55,6 +57,16 @@ const sf::Vector2u& Layer::GetSize() const
 const sf::Image Layer::CopyToImage() const
 {
 	return rTexture->getTexture().copyToImage();
+}
+
+const sf::Texture& Layer::GetTexture() const
+{
+	return rTexture->getTexture();
+}
+
+void Layer::SetHidden(bool hidden)
+{
+	this->hidden = hidden;
 }
 
 void Layer::move(const sf::Vector2f& offset)
@@ -96,5 +108,7 @@ void Layer::draw(const sf::Drawable& drawable, const sf::RenderStates& states)
 //void Layer::draw(sf::Drawable& layer, const sf::RenderStates& states)
 void Layer::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	if (hidden)
+		return;
 	target.draw(*sprite, states);
 }

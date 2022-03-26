@@ -13,6 +13,7 @@ private:
 	//sf::FloatRect bounds;
 	sf::Sprite* sprite;
 	sf::RenderTexture* rTexture;
+	bool hidden;
 public:
 	Layer(unsigned int width, unsigned int height);
 	Layer(Canvas& canvas);
@@ -21,6 +22,8 @@ public:
 	const sf::Vector2f& GetPosition() const;
 	const sf::Vector2u& GetSize() const;
 	const sf::Image CopyToImage() const;
+	const sf::Texture& GetTexture() const;
+	void SetHidden(bool hidden = true);
 	void move(const sf::Vector2f& offset);
 	void SetPosition(const sf::Vector2f& position);
 	void UpdateRenderTexture();

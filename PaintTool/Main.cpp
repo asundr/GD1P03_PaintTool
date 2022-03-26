@@ -63,13 +63,7 @@ int main()
     std::vector<Layer*>* layers = new std::vector<Layer*>();
     std::vector<Layer*> uiLayers;
 
-    sf::RenderWindow window(sf::VideoMode(width, height), "Paint Tool"); //, sf::Style::Fullscreen);
-    //sf::Texture texture;
-    //if (!texture.loadFromFile("C:\\users\\user\\downloads\\image.png"))       // Delete these lines
-    //{
-    //    std::cout << "Could not load textre image.png\n";
-    //}
-    
+    sf::RenderWindow window(sf::VideoMode(width, height), "NFT Generator"); //, sf::Style::Fullscreen);
     Canvas* canvas = new Canvas(width, height);
 
     //BatchCards(*canvas, *layers);
@@ -82,9 +76,6 @@ int main()
 
     //Layer* drawLayer = new Layer(*canvas);
     layers->push_back(new Layer(*canvas));
-
-    sf::CircleShape* circle = new sf::CircleShape(10);
-    circle->setFillColor(sf::Color::Green);
 
     Brush* brush;
     Brush* pencil = new BrushPencil();
@@ -237,9 +228,6 @@ int main()
             }
         }
 
-        
-
-        circle->setPosition(MousePosition(window));
         canvas->RenderTexture()->clear();
         canvas->RenderTexture()->draw(*canvas->Sprite());
         //if (windowUpdate)
@@ -263,7 +251,6 @@ int main()
             {
                 window.draw(*shape);
             }
-            window.draw(*circle);
             window.display();
         //}
 
