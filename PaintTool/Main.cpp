@@ -139,16 +139,7 @@ int main()
 
             if (event.type == sf::Event::KeyPressed)
             {
-                float speed = InputManager::ShiftPressed() ? 10.f : 1.f;
-                if (event.key.code == sf::Keyboard::Right)
-                {
-                    drawLayer->move(sf::Vector2f(speed, 0.0f)); // TODO remove / add modifier for layer
-                }
-                else if (event.key.code == sf::Keyboard::Left)
-                {
-                    drawLayer->move(sf::Vector2f(-speed, 0.0f));
-                }
-                else if (event.key.code == sf::Keyboard::Up)
+                if (event.key.code == sf::Keyboard::Up)
                 {
                     focusLayer = (focusLayer + 1) % layers->size();
                 }
@@ -156,19 +147,21 @@ int main()
                 {
                     focusLayer = (focusLayer - 1) % layers->size();
                 }
-                else if (event.key.code == sf::Keyboard::S && InputManager::ControlPressed())
-                {
-                    toolManager.Save(*canvas, *layers);
-                }
-                else
-                {
-                    int num = (int)event.key.code - (int)sf::Keyboard::Num1;
-                    if (num >= 0 && num < 8)
-                    {
-                        toolManager.SelectBrush((Brush::Type)num);
-                        brush = &toolManager.GetCurrentBrush();
-                    }
-                }
+                //else if (event.key.code == sf::Keyboard::S && InputManager::ControlPressed())
+                //{
+                //    toolManager.Save(*canvas, *layers);
+                //}
+                //else
+                //{
+                //    int num = (int)event.key.code - (int)sf::Keyboard::Num1;
+                //    if (num >= 0 && num < 8)
+                //    {
+                //        toolManager.SelectBrush((Brush::Type)num);
+                //        brush = &toolManager.GetCurrentBrush();
+                //    }
+                //}
+                toolManager.HandleKeyEvent(event, *canvas, *layers);
+                windowUpdate = true;
             }
 
 

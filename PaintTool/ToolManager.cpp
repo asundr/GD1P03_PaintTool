@@ -179,6 +179,34 @@ void ToolManager::HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<L
 		SetSize(size + event.mouseWheelScroll.delta);
 	}
 
+	HandleKeyEvent(event, canvas, layers);
+}
+
+void ToolManager::HandleKeyEvent(sf::Event event, Canvas& canvas, std::vector<Layer*>& layers)
+{
+	if (event.type == sf::Event::KeyPressed)
+	{
+		if (event.key.code == sf::Keyboard::Right)
+		{
+			SetSize(size + 1.f);
+		}
+		else if (event.key.code == sf::Keyboard::Left)
+		{
+			SetSize(size - 1.f);
+		}
+		else if (event.key.code == sf::Keyboard::S && InputManager::ControlPressed())
+		{
+			Save(canvas, layers);
+		}
+		else
+		{
+			int num = (int)event.key.code - (int)sf::Keyboard::Num1;
+			if (num >= 0 && num < 8)
+			{
+				SelectBrush((Brush::Type)num);
+			}
+		}
+	}
 }
 
 void ToolManager::DisplayUI(sf::RenderWindow& window) const
