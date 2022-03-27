@@ -7,6 +7,7 @@ void BrushFill::MouseDown(const sf::Vector2f& position, Layer& layer)
 	int width = layer.GetSize().x, height = layer.GetSize().y;
 	int x = (int)position.x, y = (int)position.y;
 	sf::Image img = layer.CopyToImage();
+	sf::Color targetColor = img.getPixel(x, y);
 	if (img.getPixel(x, y) == color)
 	{
 		return;
@@ -27,7 +28,7 @@ void BrushFill::MouseDown(const sf::Vector2f& position, Layer& layer)
 			{
 				continue;
 			}
-			if (img.getPixel(curr.first, curr.second) == color)
+			if (img.getPixel(curr.first, curr.second) != targetColor)
 			{
 				continue;
 			}
