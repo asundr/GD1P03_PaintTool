@@ -67,6 +67,11 @@ void ToolManager::SetColor(sf::Color color)
 	buttons[9]->setFillColor(color);
 }
 
+Brush& ToolManager::GetCurrentBrush()
+{
+	return *selectedBrush;
+}
+
 float ToolManager::GetSize() const
 {
 	return size;
@@ -77,9 +82,10 @@ sf::Color ToolManager::GetColor() const
 	return color;
 }
 
-Brush& ToolManager::GetCurrentBrush()
+bool ToolManager::IsInBounds(const sf::Vector2f mousePos) const
 {
-	return *selectedBrush;
+	sf::FloatRect rect(sf::Vector2f(0, 0), toolbarView.getSize());
+	return rect.contains(mousePos);
 }
 
 void ToolManager::SelectBrush(Brush::Type type)
@@ -145,7 +151,7 @@ std::string ToolManager::GetLoadString()
 	return "";
 }
 
-void ToolManager::LoadLayer(Canvas& canvas, std::vector<Layer*>& layers)
+void ToolManager::LoadLayer(Canvas& canvas, std::vector<Layer*>& layers, int& focusLayer)
 {
 	WindowsHelper winHelper;
 	std::string loadName = (std::string)winHelper.LoadFile();
@@ -156,11 +162,12 @@ void ToolManager::LoadLayer(Canvas& canvas, std::vector<Layer*>& layers)
 			loadName += ".png";
 		}
 		Layer* layer = new Layer(canvas, (const std::string)loadName);
-		layers.push_back(layer);
+		++focusLayer;
+		AddLayerToIndex(canvas, layers, focusLayer, layer);
 	}
 }
 
-void ToolManager::HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<Layer*>& layers, const sf::Vector2f& position)
+void ToolManager::HandleMenuEvent(sf::Event event, Canvas& canvas, int& focusLayer, std::vector<Layer*>& layers, const sf::Vector2f& position)
 {
 	int index = 0;
 	for (; index < toolCount; ++index)
@@ -174,7 +181,6 @@ void ToolManager::HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<L
 	{
 		return;
 	}
-
 	if (event.type == sf::Event::MouseButtonReleased)
 	{
 		switch (index)
@@ -188,20 +194,40 @@ void ToolManager::HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<L
 			OpenColorWindow();
 			break;
 		case 10:
-			LoadLayer(canvas, layers);
+			LoadLayer(canvas, layers, focusLayer);
 			break;
 		case 11:
 			SaveAs(canvas, layers);
 			break;
+		case 13:
+			AddLayerToIndex(canvas, layers, ++focusLayer);
+			break;
+		case 14:
+			DeleteLayerAtIndex(layers, focusLayer);
+			focusLayer--;
+			if (layers.empty())
+			{
+				AddLayerToIndex(canvas, layers, 0);
+			}
+			focusLayer = std::max(focusLayer, 0);
+			UpdateLayerButton(focusLayer, layers.size());
+			break;
 		}
 	}
-
-	if (index == 8 && event.type == sf::Event::MouseWheelScrolled
+	if (event.type == sf::Event::MouseWheelScrolled
 			&& event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
 	{
-		SetSize(size + event.mouseWheelScroll.delta);
+		if (index == 8)
+		{
+			SetSize(size + event.mouseWheelScroll.delta);
+		}
+		else if (index == 12)
+		{
+			focusLayer = (focusLayer + (int)event.mouseWheelScroll.delta) % layers.size();
+			UpdateLayerButton(focusLayer, layers.size());
+		}
+		
 	}
-
 	HandleKeyEvent(event, canvas, layers);
 }
 
@@ -232,6 +258,17 @@ void ToolManager::HandleKeyEvent(sf::Event event, Canvas& canvas, std::vector<La
 	}
 }
 
+void ToolManager::UpdateView(sf::RenderWindow& window)
+{
+	UpdateView(window.getSize().x, window.getSize().y);
+}
+
+void ToolManager::UpdateView(unsigned int width, unsigned int height)
+{
+	float toolbarHeight = 50.f * toolCount;
+	toolbarView.setViewport(sf::FloatRect(0.f, 0.f, 150.f / width, toolbarHeight / height));
+}
+
 void ToolManager::DisplayUI(sf::RenderWindow& window) const
 {
 	sf::View documentView = window.getView();
@@ -243,13 +280,6 @@ void ToolManager::DisplayUI(sf::RenderWindow& window) const
 	}
 	window.setView(documentView);
 }
-
-bool ToolManager::IsInBounds(const sf::Vector2f mousePos) const
-{
-	sf::FloatRect rect(sf::Vector2f(0, 0), toolbarView.getSize());
-	return rect.contains(mousePos);
-}
-
 
 void ToolManager::SetupBrushStamp()
 {
@@ -281,7 +311,7 @@ void ToolManager::InitializeUI()
 	}
 
 	static const char* labels[] = { "Move", "Pencil", "Line", "Box", "Ellipse", "Polygon",
-	   "Stamp", "Fill", "Thickness", "Colour",  "Load Layer", "Save As" };
+	   "Stamp", "Fill", "Thickness", "Colour",  "Load Layer", "Save As", "Layer 1/1", "New Layer", "Del. Layer"};
 
 	
 	for (int i = 0; i < toolCount; ++i)
@@ -296,13 +326,29 @@ void ToolManager::InitializeUI()
 	}
 }
 
-void ToolManager::UpdateView(sf::RenderWindow& window)
+void ToolManager::UpdateLayerButton(int currLayer, int totalLayers)
 {
-	UpdateView(window.getSize().x, window.getSize().y);
+	textBoxes[12]->setString("Layer " + std::to_string(currLayer+1) + '/' + std::to_string(totalLayers));
 }
 
-void ToolManager::UpdateView(unsigned int width, unsigned int height)
+void ToolManager::AddLayerToIndex(Canvas& canvas, std::vector<Layer*>& layers, int index, Layer* layer)
 {
-	float toolbarHeight = 50.f * toolCount;
-	toolbarView.setViewport(sf::FloatRect(0.f, 0.f, 150.f / width, toolbarHeight / height));
+	auto iterator = layers.begin();
+	iterator += index;
+	if (layer == nullptr)
+	{
+		layer = new Layer(canvas);
+	}
+	layers.insert(iterator, layer);
+	UpdateLayerButton(index, layers.size());
 }
+
+void ToolManager::DeleteLayerAtIndex(std::vector<Layer*>& layers, int index)
+{
+	auto iterator = layers.begin();
+	iterator += index;
+	delete layers[index];
+	layers.erase(iterator);
+	UpdateLayerButton(index, layers.size());
+}
+

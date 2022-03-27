@@ -31,7 +31,7 @@ int main()
     layers->push_back(new Layer(*canvas));
 
     Layer* brushUI = nullptr;
-    unsigned int focusLayer = layers->size()-1;
+    int focusLayer = layers->size()-1;
     while (window.isOpen())
     {
         sf::Event event;
@@ -56,9 +56,9 @@ int main()
             // Listen for menu events
             if (toolManager.IsInBounds(sf::Vector2f(sf::Mouse::getPosition(window))))
             {
-                toolManager.HandleMenuEvent(event, *canvas, *layers, sf::Vector2f(sf::Mouse::getPosition(window)));
+                toolManager.HandleMenuEvent(event, *canvas, focusLayer, *layers, sf::Vector2f(sf::Mouse::getPosition(window)));
                 windowUpdate = true;
-                continue;
+                break;
             }
             // Mouse wheel events used to zoom and pan around the canvas
             if (event.type == sf::Event::MouseWheelScrolled)
@@ -104,15 +104,6 @@ int main()
 
             if (event.type == sf::Event::KeyPressed)
             {
-                if (event.key.code == sf::Keyboard::Up)
-                {
-                    // change the current layer with up / down  keys
-                    focusLayer = (focusLayer + 1) % layers->size();
-                }
-                else if (event.key.code == sf::Keyboard::Down)
-                {
-                    focusLayer = (focusLayer - 1) % layers->size();
-                }
                 toolManager.HandleKeyEvent(event, *canvas, *layers);
                 windowUpdate = true;
             }
