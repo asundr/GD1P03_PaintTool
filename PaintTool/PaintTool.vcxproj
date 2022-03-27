@@ -156,6 +156,7 @@
     <ClCompile Include="BrushStamp.cpp" />
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="CHelperClass.cpp" />
+    <ClCompile Include="ColorSelector.cpp" />
     <ClCompile Include="EllipseShape.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Layer.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="BrushStamp.h" />
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="CHelperClass.h" />
+    <ClInclude Include="ColorSelector.h" />
     <ClInclude Include="EllipseShape.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Layer.h" />

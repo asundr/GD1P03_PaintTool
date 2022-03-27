@@ -13,6 +13,7 @@
 #include "CHelperClass.h"
 #include "InputManager.h"
 #include "ToolManager.h"
+#include "ColorSelector.h"
 
 ToolManager::ToolManager() : selectedBrush(0), size(5), filePath("")
 {
@@ -94,6 +95,13 @@ void ToolManager::SelectBrush(Brush::Type type)
 		selectedBrush->SetColor(color);
 		selectedBrush->SetSize(size);
 	}
+}
+
+void ToolManager::OpenColorWindow()
+{
+	ColorSelector* selector = new ColorSelector();
+	sf::Color color = selector->SelectColor(color);
+	SetColor(color);
 }
 
 void ToolManager::SaveAs(Canvas& canvas, std::vector<Layer*>& layers)
@@ -179,7 +187,7 @@ void ToolManager::HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<L
 			SelectBrush((Brush::Type)index);
 			break;
 		case 9:
-			// color selector
+			OpenColorWindow();
 			break;
 		case 10:
 			LoadLayer(canvas, layers);

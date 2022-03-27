@@ -13,20 +13,19 @@
 
 /*
 Requirements:
-    !Lines, !Boxes, !Ellipses, !polygons, +stamp, !fill
-    Menu options for: color, !width, brush, !save, !load, (layers), (rotate), (crop)
+    ! !Lines, !Boxes, !Ellipses, !polygons, !stamp, !fill
+    Menu options for: color, !width, !brush, !save, !load, (layers), (rotate), (crop)
     ! Rezising windows doesn't affect canvas
 Extras
     ! Save & laod
     ! draw poly
-    bitmap stamps for paiting
+    ! bitmap stamps for paiting
     standard colour dialogue
         Add these options to the menu
 A++
     ! Camera: Zoom, pan
     ! Fill brush
-    Layers: move, show/hide w/ menu
-    Rotate and crop canvas
+    Layers: !move, select, delete
 */
 
 void Resize(sf::RenderWindow& window, sf::Event& event);
@@ -50,7 +49,6 @@ int main()
 {
     unsigned int width = 1000, height = 1000;     //TODO Reset
     //unsigned int width = 823, height = 1180;
-    unsigned int focusLayer = 1;
     std::vector<Layer*>* layers = new std::vector<Layer*>();
 
     sf::RenderWindow window(sf::VideoMode(width, height), "NFT Generator");
@@ -66,11 +64,12 @@ int main()
     //return 0;
     /////////////////////////////////////////  Acual program loop below here
 
-    layers->push_back(new Layer(*canvas, "C:\\users\\user\\downloads\\image.png"));   // guts
+    //layers->push_back(new Layer(*canvas, "C:\\users\\user\\downloads\\image.png"));   // guts
     
     layers->push_back(new Layer(*canvas));
 
     Layer* brushUI = nullptr;
+    unsigned int focusLayer = layers->size()-1;
     while (window.isOpen())
     {
         sf::Event event;
@@ -408,6 +407,5 @@ void BatchCards(Canvas& canvas, std::vector<Layer*>& layers)
     delete hidden;
     delete textLayer;
     delete rtAtlas;
-    // combine
-    
+
 }

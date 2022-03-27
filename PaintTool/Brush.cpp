@@ -41,19 +41,6 @@ sf::Vector2f Brush::Subtract(const sf::Vector2f& a, const sf::Vector2f& b)
 // Could be made more efficient for circle-shaped lines by using a RectancleShape
 void Brush::DrawLine(const sf::Vector2f& a, const sf::Vector2f& b, Layer& layer, sf::Shape& shape)
 {
-	//int size = 10; //TODO refplace
-	//sf::Vector2f dif = Subtract(b, a);
-	//float length = sqrtf(dif.x * dif.x + dif.y * dif.y) * 2.f;
-	//float angle = atanf(dif.y / dif.x) * 180.f / (float)M_PI;
-	//
-	//shape.setPosition(a);
-	//sf::Vector2f norm = sf::Vector2f(dif.x / length, dif.y / length);
-	//for (int i = 0; i <= (int)length; ++i)
-	//{
-	//	layer.draw(shape);
-	//	shape.move(norm);
-	//}
-
 	sf::Vector2f dif = Subtract(a, b);
 	float length = sqrtf(dif.x * dif.x + dif.y * dif.y);
 	float angle = atanf(dif.y / dif.x) * 180.f / (float)M_PI;
@@ -67,7 +54,7 @@ void Brush::DrawLine(const sf::Vector2f& a, const sf::Vector2f& b, Layer& layer,
 	lines[2].position = sf::Vector2f(a.x - perpNorm.x, a.y - perpNorm.y);
 
 	for (int i = 0; i < 4; ++i)
-		lines[i].color = shape.getOutlineColor();
+		lines[i].color = color;
 
 	layer.draw(lines);
 

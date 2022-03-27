@@ -28,6 +28,7 @@ public:
 	sf::Color GetColor() const;
 	bool IsInBounds(const sf::Vector2f position) const;
 	void SelectBrush(Brush::Type type);
+	void OpenColorWindow();
 	void SaveAs(Canvas& canvas, std::vector<Layer*>& layers);
 	void HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<Layer*>& layers, const sf::Vector2f& position);
 	void HandleKeyEvent(sf::Event event, Canvas& canvas, std::vector<Layer*>& layers);
