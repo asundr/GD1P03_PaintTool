@@ -52,9 +52,9 @@ int main()
     std::vector<Layer*>* layers = new std::vector<Layer*>();
 
     sf::RenderWindow window(sf::VideoMode(width, height), "NFT Generator");
-    ToolManager toolManager;
-    toolManager.UpdateView(window);
     Canvas* canvas = new Canvas(width, height);
+    ToolManager toolManager(canvas);
+    toolManager.UpdateView(window);
 
     Brush* brush = &toolManager.GetCurrentBrush();
 

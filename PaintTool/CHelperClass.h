@@ -18,7 +18,7 @@ public:
 	static T MaxValue(T x, T y)
 	{
 		std::cout << sizeof(x) << ", " << sizeof(y) << std::endl;
-		return;
+		return (x > y) ? x : y;
 	}
 
 	sf::String SaveFile();

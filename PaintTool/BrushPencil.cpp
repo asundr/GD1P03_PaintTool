@@ -2,12 +2,9 @@
 #include "Layer.h"
 
 
-BrushPencil::BrushPencil()
+BrushPencil::BrushPencil() : start(0)
 {
-	start = 0;
-	size = 10;
-	color = sf::Color::Black;
-	shape = new sf::CircleShape((float)size);
+	shape = new sf::CircleShape(size);
 	shape->setFillColor(color);
 	shape->setOutlineColor(color);
 }
@@ -22,7 +19,6 @@ void BrushPencil::MouseDown(const sf::Vector2f& position, Layer& layer)
 {
 	delete start;
 	start = new sf::Vector2f(position);
-
 }
 
 Layer* BrushPencil::Update(const sf::Vector2f& position, Layer& layer)

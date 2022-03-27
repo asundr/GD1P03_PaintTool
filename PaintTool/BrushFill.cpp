@@ -8,7 +8,12 @@ void BrushFill::MouseDown(const sf::Vector2f& position, Layer& layer)
 	int x = (int)position.x, y = (int)position.y;
 	sf::Image img = layer.CopyToImage();
 	if (img.getPixel(x, y) == color)
+	{
 		return;
+	}
+
+	// Checks a pixel to see if it's the fill colour. If not, sets color and checks neighbors
+	// Could probably be made faster
 	std::queue<std::pair<int, int>> queue;
 	queue.push(std::pair<int, int>(x, y));
 	while (!queue.empty())

@@ -19,7 +19,7 @@ private:
 	sf::Font font;
 	std::string filePath;
 public:
-	ToolManager();
+	ToolManager(const Canvas* canvas = nullptr);
 	~ToolManager();
 	void SetSize(float size);
 	void SetColor(sf::Color color);

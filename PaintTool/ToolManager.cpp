@@ -15,7 +15,7 @@
 #include "ToolManager.h"
 #include "ColorSelector.h"
 
-ToolManager::ToolManager() : selectedBrush(0), size(5), filePath("")
+ToolManager::ToolManager(const Canvas* canvas) : selectedBrush(0), size(5), filePath("")
 {
 	if (!font.loadFromFile("FreeSans.otf"))
 	{
@@ -33,6 +33,7 @@ ToolManager::ToolManager() : selectedBrush(0), size(5), filePath("")
 	SelectBrush(Brush::Type::PENCIL);
 	SetSize(5);
 	SetColor(sf::Color::Black);
+	Brush::SetCanvas(canvas);
 }
 
 ToolManager::~ToolManager()

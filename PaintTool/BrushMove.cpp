@@ -1,7 +1,6 @@
-#include "BrushMove.h"
 #include "Layer.h"
-
-#include <iostream>
+#include "Canvas.h"
+#include "BrushMove.h"
 
 BrushMove::BrushMove()
 {
@@ -12,6 +11,7 @@ BrushMove::BrushMove()
 
 BrushMove::~BrushMove()
 {
+	delete spriteUI;
 	delete layerStart;
 	delete start;
 }
@@ -22,10 +22,8 @@ void BrushMove::MouseDown(const sf::Vector2f& position, Layer& layer)
 	delete start;
 	layerStart = new sf::Vector2f(layer.GetPosition());
 	start = new sf::Vector2f(position);
-
-	overlay = new Layer(823, 1180); // TODO
+	overlay = new Layer(canvas->Width(), canvas->Height());
 	spriteUI = new sf::Sprite(layer.GetTexture());
-
 	layer.SetHidden(true);
 }
 

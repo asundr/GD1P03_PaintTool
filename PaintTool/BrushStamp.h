@@ -19,4 +19,3 @@ public:
 	virtual Layer* MouseUp(const sf::Vector2f& position, Layer& layer) override;
 
 };
-

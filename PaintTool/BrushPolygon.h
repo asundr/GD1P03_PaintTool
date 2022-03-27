@@ -6,7 +6,6 @@ class BrushPolygon : public Brush
 {
 private:
 	std::vector<sf::Vector2f> points;
-	Layer* overlay;
 public:
 	BrushPolygon();
 	~BrushPolygon();

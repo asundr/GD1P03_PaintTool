@@ -46,7 +46,7 @@ void BrushStamp::MouseDown(const sf::Vector2f& position, Layer& layer)
     {
         return;
     }
-    float scale = size / fmaxf(texture->getSize().x, texture->getSize().y);
+    float scale = size / fmaxf((float)texture->getSize().x, (float)texture->getSize().y);
     sprite->setScale(sf::Vector2f(scale, scale));
     sprite->setPosition(position);
     layer.draw(*sprite);
