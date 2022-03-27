@@ -2,7 +2,7 @@
 #include <math.h>
 #include "EllipseShape.h"
 
-EllipseShape::EllipseShape() : pointCount(30), radius(sf::Vector2f(1.f,1.f))
+EllipseShape::EllipseShape() : pointCount(100), radius(sf::Vector2f(1.f,1.f))
 {
 }
 
