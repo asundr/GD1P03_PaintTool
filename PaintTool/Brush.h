@@ -28,12 +28,12 @@ protected:
 	Layer* overlay;
 	static const Canvas* canvas;
 public:
-	Brush(int size = 10, sf::Color = sf::Color::Black);
+	Brush(float size = 10.f, sf::Color = sf::Color::Black);
 	~Brush();
 	virtual void SetColor(const sf::Color color);
 	void SetSize(float size);
 	const sf::Color& GetColor() const;
-	int GetSize() const;
+	float GetSize() const;
 	static void SetCanvas(const Canvas* canvas);
 
 	// These three functions are used by the child classes to draw to layers

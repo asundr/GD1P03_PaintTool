@@ -1,11 +1,9 @@
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include "Layer.h"
 #include "Brush.h"
 
 const Canvas* Brush::canvas = nullptr;
 
-Brush::Brush(int size, sf::Color color) : size(size), color(color), overlay(0)
+Brush::Brush(float size, sf::Color color) : size(size), color(color), overlay(0)
 {
 }
 
@@ -29,7 +27,7 @@ const sf::Color& Brush:: GetColor() const
 	return color;
 }
 
-int Brush::GetSize() const
+float Brush::GetSize() const
 {
 	return size;
 }
@@ -51,7 +49,6 @@ void Brush::DrawLine(const sf::Vector2f& a, const sf::Vector2f& b, Layer& layer,
 {
 	sf::Vector2f dif = Subtract(a, b);
 	float length = sqrtf(dif.x * dif.x + dif.y * dif.y);
-	float angle = atanf(dif.y / dif.x) * 180.f / (float)M_PI;
 	sf::Vector2f norm = sf::Vector2f(dif.x / length, dif.y / length);
 	sf::Vector2f perpendicularDif = sf::Vector2f(-norm.y * size / 2.f, norm.x * size / 2.f);
 

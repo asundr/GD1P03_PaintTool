@@ -1,20 +1,20 @@
-#include "CHelperClass.h"
+#include "WindowsHelper.h"
 
-sf::String CHelperClass::SaveFile()
+sf::String WindowsHelper::SaveFile()
 {
     Setup();
     GetSaveFileName(&currFileName);
     return currFileName.lpstrFile;
 }
 
-sf::String CHelperClass::LoadFile()
+sf::String WindowsHelper::LoadFile()
 {
     Setup();
     GetOpenFileName(&currFileName);
     return currFileName.lpstrFile;
 }
 
-void CHelperClass::Setup()
+void WindowsHelper::Setup()
 {
     ZeroMemory(&currFileName, sizeof(currFileName));
     currFileName.lStructSize = sizeof(currFileName);

@@ -155,7 +155,7 @@
     <ClCompile Include="BrushPolygon.cpp" />
     <ClCompile Include="BrushStamp.cpp" />
     <ClCompile Include="Canvas.cpp" />
-    <ClCompile Include="CHelperClass.cpp" />
+    <ClCompile Include="WindowsHelper.cpp" />
     <ClCompile Include="ColorSelector.cpp" />
     <ClCompile Include="EllipseShape.cpp" />
     <ClCompile Include="InputManager.cpp" />
@@ -174,7 +174,7 @@
     <ClInclude Include="BrushPolygon.h" />
     <ClInclude Include="BrushStamp.h" />
     <ClInclude Include="Canvas.h" />
-    <ClInclude Include="CHelperClass.h" />
+    <ClInclude Include="WindowsHelper.h" />
     <ClInclude Include="ColorSelector.h" />
     <ClInclude Include="EllipseShape.h" />
     <ClInclude Include="InputManager.h" />

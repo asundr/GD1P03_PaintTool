@@ -1,7 +1,7 @@
 #include "Canvas.h"
 #include "Layer.h"
 
-Layer::Layer(unsigned int width, unsigned int height) :hidden(0)
+Layer::Layer(unsigned int width, unsigned int height) : hidden(0)
 {
 	rTexture = new sf::RenderTexture();
 	rTexture->create(width, height);
@@ -10,19 +10,15 @@ Layer::Layer(unsigned int width, unsigned int height) :hidden(0)
 
 Layer::Layer(Canvas& canvas) : Layer(canvas.Width(), canvas.Height())
 {
-	//rTexture = new sf::RenderTexture();
-	//rTexture->create(canvas.Width(), canvas.Height());
-	//sprite = new sf::Sprite(rTexture->getTexture());
 }
 
 // Create layer from image file
-Layer::Layer(Canvas& canvas, const std::string path) : hidden(0)// TODO Remove canvas argument
+Layer::Layer(Canvas& canvas, const std::string path) : hidden(0)
 {
 	sf::Texture* texture = new sf::Texture();
 
 	if (!texture->loadFromFile(path))
 	{
-		//Layer(canvas);
 		sprite = 0;
 		rTexture = 0;
 		return;
@@ -49,7 +45,7 @@ const sf::Vector2f& Layer::GetPosition() const
 	return sprite->getPosition();
 }
 
-const sf::Vector2u& Layer::GetSize() const
+sf::Vector2u Layer::GetSize() const
 {
 	return rTexture->getSize();
 }
@@ -81,7 +77,9 @@ void Layer::SetPosition(const sf::Vector2f& position)
 	UpdateRenderTexture();
 }
 
-void Layer::UpdateRenderTexture() //TODO: fix lossy (alt: store scale, transform and rot)
+// Used to apply any changes made to to the layer to the RenderTexture
+// Warning: Currently crops layers that are moved outside of the canvas
+void Layer::UpdateRenderTexture()
 {
 	const sf::Vector2f& offset = sprite->getPosition();
 	sf::RenderTexture* newRT = new sf::RenderTexture();
@@ -105,7 +103,6 @@ void Layer::draw(const sf::Drawable& drawable, const sf::RenderStates& states)
 	rTexture->display(); // prevents flipping on y
 }
 
-//void Layer::draw(sf::Drawable& layer, const sf::RenderStates& states)
 void Layer::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	if (hidden)

@@ -1,8 +1,8 @@
+// Static class used to provide reliable user input
+
 #include "InputManager.h"
 
-#include <iostream> //TODO delete
-
-InputManager::InputManager() : mouseDown(0) //TODO remove
+InputManager::InputManager()
 {
 }
 
@@ -10,7 +10,7 @@ InputManager::~InputManager()
 {
 }
 
-void InputManager::UpdateState(sf::Event& event) //TODO move this to XPressed(), remove data members
+void InputManager::UpdateState(sf::Event& event)
 {
 	UpdateButtonState(event, LAlt, sf::Keyboard::LAlt);
 	UpdateButtonState(event, RAlt, sf::Keyboard::RAlt); 
@@ -22,7 +22,6 @@ void InputManager::UpdateState(sf::Event& event) //TODO move this to XPressed(),
 
 void InputManager::UpdateButtonState(sf::Event& event, bool& state, sf::Keyboard::Key key)
 {
-	//state =  event.key.code == key ? event.type == sf::Event::KeyPressed : state;
 	state = sf::Keyboard::isKeyPressed(key);
 }
 

@@ -18,16 +18,12 @@ ColorSelector::~ColorSelector()
 	delete colorTex;
 }
 
-void ColorSelector::SetVisible(bool visible)
-{
-}
-
 bool ColorSelector::IsOpen() const
 {
 	return false;
 }
 
-sf::Color ColorSelector::SelectColor(sf::Color& currColor) const
+sf::Color ColorSelector::SelectColor(const sf::Color& currColor) const
 {
 	window->display();
 	window->requestFocus();

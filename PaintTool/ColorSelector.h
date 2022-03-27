@@ -1,3 +1,6 @@
+// Loads an image of the colour spectrum and allows the user to select
+// a pixel, returning the corresponding color
+
 #pragma once
 
 #include "SFML/Graphics.hpp"
@@ -11,7 +14,6 @@ private:
 public:
 	ColorSelector();
 	~ColorSelector();
-	void SetVisible(bool visible = true);
 	bool IsOpen() const;
-	sf::Color SelectColor(sf::Color& currColor) const;
+	sf::Color SelectColor(const sf::Color& currColor) const;
 };

@@ -9,7 +9,7 @@
 
 class Layer;
 
-class Canvas //: public sf::RenderTexture
+class Canvas
 {
 private:
 	unsigned int width;
@@ -23,7 +23,7 @@ public:
 	~Canvas();
 	unsigned int Width() const;
 	unsigned int Height() const;
-	sf::RenderTexture* RenderTexture(); // TODO replace this and sprite accessor
+	sf::RenderTexture* RenderTexture();
 	sf::Sprite* Sprite();
 	void Resize(int newWidth, int newHeight);
 	void clear();

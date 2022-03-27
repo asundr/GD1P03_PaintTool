@@ -42,7 +42,7 @@
     <ClCompile Include="BrushPencil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CHelperClass.cpp">
+    <ClCompile Include="WindowsHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BrushEllipse.cpp">
@@ -92,7 +92,7 @@
     <ClInclude Include="BrushPencil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CHelperClass.h">
+    <ClInclude Include="WindowsHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BrushEllipse.h">

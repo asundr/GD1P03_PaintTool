@@ -11,7 +11,6 @@ private:
 	static bool RControl;
 	static bool LShift;
 	static bool RShift;
-	bool mouseDown;
 public:
 	InputManager();
 	~InputManager();

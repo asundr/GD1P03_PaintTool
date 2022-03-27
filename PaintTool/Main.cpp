@@ -1,32 +1,10 @@
 #include "SFML/Graphics.hpp"
 #include <vector>
-
 #include "Canvas.h"
 #include "Layer.h"
 #include "InputManager.h"
-
 #include "Brush.h"
-
 #include "ToolManager.h"
-
-#include <iostream>
-
-/*
-Requirements:
-    ! !Lines, !Boxes, !Ellipses, !polygons, !stamp, !fill
-    Menu options for: color, !width, !brush, !save, !load, (layers), (rotate), (crop)
-    ! Rezising windows doesn't affect canvas
-Extras
-    ! Save & laod
-    ! draw poly
-    ! bitmap stamps for paiting
-    standard colour dialogue
-        Add these options to the menu
-A++
-    ! Camera: Zoom, pan
-    ! Fill brush
-    Layers: !move, select, delete
-*/
 
 void Resize(sf::RenderWindow& window, sf::Event& event);
 void IncrementZoomLevel(int delta);
@@ -35,36 +13,23 @@ void UpdateZoom(sf::RenderWindow& window, int prevZoomLevel);
 void UpdatePanX(sf::RenderWindow& window, float direction);
 void UpdatePanY(sf::RenderWindow& window, float direction);
 sf::Vector2f MousePosition(sf::RenderWindow& window);
-
 void RenderWindow(sf::RenderWindow& window, Canvas* canvas, std::vector<Layer*>* layers);
 
-void BatchCards(Canvas& canvas, std::vector<Layer*>& layers);
+void BatchCards(Canvas& canvas, std::vector<Layer*>& layers); // Not part of assignment
 
-int zoomLevel = 0; //TODO Add to camera obj
-
+int zoomLevel = 0;
 float sizez = 10.f;
 sf::Color color = sf::Color::Black;
 
 int main()
 {
-    unsigned int width = 1000, height = 1000;     //TODO Reset
-    //unsigned int width = 823, height = 1180;
+    unsigned int width = 1080, height = 720;
     std::vector<Layer*>* layers = new std::vector<Layer*>();
-
     sf::RenderWindow window(sf::VideoMode(width, height), "NFT Generator");
     Canvas* canvas = new Canvas(width, height);
     ToolManager toolManager(canvas);
     toolManager.UpdateView(window);
-
     Brush* brush = &toolManager.GetCurrentBrush();
-
-
-    //BatchCards(*canvas, *layers);
-    //RenderWindow(window, canvas, layers);
-    //return 0;
-    /////////////////////////////////////////  Acual program loop below here
-
-    //layers->push_back(new Layer(*canvas, "C:\\users\\user\\downloads\\image.png"));   // guts
     
     layers->push_back(new Layer(*canvas));
 
@@ -73,12 +38,13 @@ int main()
     while (window.isOpen())
     {
         sf::Event event;
-        InputManager::UpdateState(event);
+        InputManager::UpdateState(event); // updates user input state
         bool windowUpdate = false;
         while (window.pollEvent(event))
         {
             Layer* drawLayer = layers->at(focusLayer); // active layer being edited
             brush = &toolManager.GetCurrentBrush();
+            // Window close / resizing events
             if (event.type == sf::Event::Closed)
             {
                 window.close();
@@ -90,13 +56,14 @@ int main()
                 toolManager.UpdateView(window);
                 windowUpdate = true;
             }
-
+            // Listen for menu events
             if (toolManager.IsInBounds(sf::Vector2f(sf::Mouse::getPosition(window))))
             {
                 toolManager.HandleMenuEvent(event, *canvas, *layers, sf::Vector2f(sf::Mouse::getPosition(window)));
                 windowUpdate = true;
                 continue;
             }
+            // Mouse wheel events used to zoom and pan around the canvas
             if (event.type == sf::Event::MouseWheelScrolled)
             {
                 if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
@@ -126,12 +93,14 @@ int main()
             {
                 if (window.hasFocus())
                 {
+                    // Tells the brush that he mouse has started clicking
                     brush->MouseDown(MousePosition(window), *layers->at(focusLayer));
                 }
                 windowUpdate = true; 
             }
             else if (event.type == sf::Event::MouseButtonReleased)
             {
+                // Tells the brush the mouse is no longer clicking
                 brushUI = brush->MouseUp(MousePosition(window), *layers->at(focusLayer));
                 windowUpdate = true;
             }
@@ -140,6 +109,7 @@ int main()
             {
                 if (event.key.code == sf::Keyboard::Up)
                 {
+                    // change the current layer with up / down  keys
                     focusLayer = (focusLayer + 1) % layers->size();
                 }
                 else if (event.key.code == sf::Keyboard::Down)
@@ -150,7 +120,7 @@ int main()
                 windowUpdate = true;
             }
 
-
+            // Update the brush between clicks
             if (InputManager::MouseLeftPressed() || brushUI)
             {
                 brushUI = brush->Update(MousePosition(window), *layers->at(focusLayer));
@@ -158,6 +128,7 @@ int main()
             }
         }
 
+        // Draw to the window if changes have been made
         if (windowUpdate)
         {
             canvas->clear();
@@ -205,12 +176,11 @@ void DrawRenderTexture(sf::RenderWindow& window, sf::RenderTexture& texture)
     window.draw(temp);
 }
 
-void UpdateZoom(sf::RenderWindow& window, int prevZoomLevel) // need to update mouse pos based on scale
+void UpdateZoom(sf::RenderWindow& window, int prevZoomLevel) 
 {
     sf::View newView(window.getView());
     float prevZoom = fmax(0.1f, fmin(5.0f, 1.0f - prevZoomLevel / 10.0f));
     float fZoom = fmax(0.1f, fmin(5.0f, 1.0f - zoomLevel / 10.0f));
-    //std::cout << zoomLevel
     newView.zoom(fZoom / prevZoom);
     window.setView(newView);
 }
@@ -250,8 +220,17 @@ void RenderWindow(sf::RenderWindow& window, Canvas* canvas, std::vector<Layer*>*
     window.display();
 }
 
+
+
+
+///////////////////  Below code not part of assignment /////////////////////////////
+// 
+// Below code was hastily written to batch create cards for GD1J01BSE Game Design Principles
+// 
+
 #include <fstream>
 #include <sstream>
+#include <iostream>
 void BatchCards(Canvas& canvas, std::vector<Layer*>& layers)
 {
     layers.push_back(new Layer(canvas, "C:\\users\\user\\downloads\\NorseGame\\card_blank.png"));
@@ -407,5 +386,4 @@ void BatchCards(Canvas& canvas, std::vector<Layer*>& layers)
     delete hidden;
     delete textLayer;
     delete rtAtlas;
-
 }

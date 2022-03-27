@@ -10,7 +10,7 @@
 #include "BrushStamp.h"
 #include "BrushFill.h"
 
-#include "CHelperClass.h"
+#include "WindowsHelper.h"
 #include "InputManager.h"
 #include "ToolManager.h"
 #include "ColorSelector.h"
@@ -20,6 +20,7 @@ ToolManager::ToolManager(const Canvas* canvas) : selectedBrush(0), size(5), file
 	if (!font.loadFromFile("FreeSans.otf"))
 	{
 	}
+	// create brushes
 	brushes.push_back(new BrushMove()	);	
 	brushes.push_back(new BrushPencil()	);
 	brushes.push_back(new BrushLine()	);	
@@ -107,7 +108,7 @@ void ToolManager::OpenColorWindow()
 
 void ToolManager::SaveAs(Canvas& canvas, std::vector<Layer*>& layers)
 {
-	CHelperClass winHelper;
+	WindowsHelper winHelper;
 	std::string saveName = (std::string)winHelper.SaveFile();
 	if (saveName.length() != 0)
 	{
@@ -131,7 +132,7 @@ void ToolManager::Save(Canvas& canvas, std::vector<Layer*>& layers)
 
 std::string ToolManager::GetLoadString()
 {
-	CHelperClass winHelper;
+	WindowsHelper winHelper;
 	std::string loadName = (std::string)winHelper.LoadFile();
 	if (loadName.length() != 0)
 	{
@@ -146,7 +147,7 @@ std::string ToolManager::GetLoadString()
 
 void ToolManager::LoadLayer(Canvas& canvas, std::vector<Layer*>& layers)
 {
-	CHelperClass winHelper;
+	WindowsHelper winHelper;
 	std::string loadName = (std::string)winHelper.LoadFile();
 	if (loadName.length() != 0)
 	{
@@ -159,7 +160,6 @@ void ToolManager::LoadLayer(Canvas& canvas, std::vector<Layer*>& layers)
 	}
 }
 
-#include <iostream> // TODO remove
 void ToolManager::HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<Layer*>& layers, const sf::Vector2f& position)
 {
 	int index = 0;
@@ -174,9 +174,6 @@ void ToolManager::HandleMenuEvent(sf::Event event, Canvas& canvas, std::vector<L
 	{
 		return;
 	}
-
-	
-	//std::cout <<  index << std::endl;
 
 	if (event.type == sf::Event::MouseButtonReleased)
 	{
@@ -249,7 +246,6 @@ void ToolManager::DisplayUI(sf::RenderWindow& window) const
 
 bool ToolManager::IsInBounds(const sf::Vector2f mousePos) const
 {
-	//sf::Vector2f bounds = toolbarView.getSize();
 	sf::FloatRect rect(sf::Vector2f(0, 0), toolbarView.getSize());
 	return rect.contains(mousePos);
 }
