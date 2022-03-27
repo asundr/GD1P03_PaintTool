@@ -6,6 +6,8 @@
 #include "Brush.h"
 #include "ToolManager.h"
 
+void BatchCards(Canvas& canvas, std::vector<Layer*>& layers); // Not part of assignment
+
 void Resize(sf::RenderWindow& window, sf::Event& event);
 void IncrementZoomLevel(int delta);
 void DrawRenderTexture(sf::RenderWindow& window, sf::RenderTexture& texture);
@@ -14,12 +16,7 @@ void UpdatePanX(sf::RenderWindow& window, float direction);
 void UpdatePanY(sf::RenderWindow& window, float direction);
 sf::Vector2f MousePosition(sf::RenderWindow& window);
 void RenderWindow(sf::RenderWindow& window, Canvas* canvas, std::vector<Layer*>* layers);
-
-void BatchCards(Canvas& canvas, std::vector<Layer*>& layers); // Not part of assignment
-
 int zoomLevel = 0;
-float sizez = 10.f;
-sf::Color color = sf::Color::Black;
 
 int main()
 {
