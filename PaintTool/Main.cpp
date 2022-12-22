@@ -6,7 +6,7 @@
 #include "Brush.h"
 #include "ToolManager.h"
 
-void BatchCards(Canvas& canvas, std::vector<Layer*>& layers); // Not part of assignment
+void BatchCards(); // Not part of assignment
 
 void Resize(sf::RenderWindow& window, sf::Event& event);
 void IncrementZoomLevel(int delta);
@@ -20,10 +20,17 @@ int zoomLevel = 0;
 
 int main()
 {
-    unsigned int width = 1080, height = 720;
+    //unsigned int width = 1080, height = 720;
+    unsigned int width = 823, height = 1180;
     std::vector<Layer*>* layers = new std::vector<Layer*>();
     sf::RenderWindow window(sf::VideoMode(width, height), "NFT Generator");
     Canvas* canvas = new Canvas(width, height);
+
+    BatchCards();
+    RenderWindow(window, canvas, layers);
+    return 0;
+    /////////////////////////////////////////  Acual program loop below here
+
     ToolManager toolManager(canvas);
     toolManager.UpdateView(window);
     Brush* brush = &toolManager.GetCurrentBrush();
@@ -216,19 +223,60 @@ void RenderWindow(sf::RenderWindow& window, Canvas* canvas, std::vector<Layer*>*
 // Below code was hastily written to batch create cards for GD1J01BSE Game Design Principles
 // 
 
+struct Card
+{
+    std::string title;
+    std::string value;
+    std::string attack;
+    std::string defense;
+    std::string category;
+    std::string type;
+    std::string description;
+    //int count = 0;
+    std::string filename;
+    Card(std::vector<std::string> line)
+    {
+        title = line[0];
+        value = line[1];
+        attack = line[2];
+        defense = line[3];
+        int slashIndex = line[4].find_first_of('/');
+        category = line[4].substr(0, slashIndex);
+        type = line[4].substr(slashIndex + 1, line[4].size());
+        description = line[5];
+        //count = stoi(line[6]);
+        if (line.size() == 8)
+            filename = line[7]; 
+    }
+    std::string GetFileName() const
+    {
+        if (filename.length())
+            return filename;
+        return category + '_' + type;
+    }
+    const std::string GetFilePath(std::string folderpath) const { return folderpath + GetFileName() + ".png"; }
+};
+
+
 #include <fstream>
 #include <sstream>
 #include <iostream>
-void BatchCards(Canvas& canvas, std::vector<Layer*>& layers)
+void BatchCards()
 {
+    Canvas canvas(823, 1180);
+    std::vector<Layer*> layers;
+
+    std::string path = "C:\\users\\user\\downloads\\NorseGame\\";
+    std::string sourceCardPath = path + "input\\";
+    std::string outputCardPAth = path + "output\\";
     layers.push_back(new Layer(canvas, "C:\\users\\user\\downloads\\NorseGame\\card_blank.png"));
-    Layer* textLayer = new Layer(canvas);
-    layers.push_back(textLayer);
+    //Layer* textLayer = new Layer(canvas);
+    //layers.push_back(textLayer);
 
     std::vector<std::vector<std::string>> cards;
     std::vector<std::string> cardRow;
     std::string line, word;
-    std::fstream file("C:\\users\\user\\downloads\\NorseGame\\cards_lok.csv", std::ios::in);
+    std::fstream file("C:\\users\\user\\downloads\\NorseGame\\cards_item.csv", std::ios::in);
     if (file.is_open())
     {
         while (getline(file, line))
@@ -246,7 +294,7 @@ void BatchCards(Canvas& canvas, std::vector<Layer*>& layers)
         file.close();
     }
 
-    unsigned int cardTotal = 1;
+    unsigned int cardTotal = 0;
     for (unsigned int row = 1; row < cards.size(); ++row)
     {
         cardTotal += stoi(cards[row][6]);
@@ -257,15 +305,26 @@ void BatchCards(Canvas& canvas, std::vector<Layer*>& layers)
     sf::RenderTexture* rtAtlas = new sf::RenderTexture();
     rtAtlas->create(atlasCols * canvas.Width(), atlasRows * canvas.Height());
 
+
+    sf::Font font;
+    if (!font.loadFromFile("C:\\users\\user\\downloads\\NorseGame\\Norse.otf"))
+    {
+    }
+
     int atlasIndex = 0;
     for (unsigned int row = 1; row < cards.size(); ++row)
     {
         sf::Color color = sf::Color::Black;
         sf::Text text;
-        sf::Font font;
-        if (!font.loadFromFile("C:\\users\\user\\downloads\\NorseGame\\Norse.otf"))
-        {
-        }
+
+        Card card(cards[row]);
+        std::cout << card.GetFilePath(sourceCardPath) << std::endl;
+        //continue;
+        Layer* textLayer = new Layer(canvas, card.GetFilePath(sourceCardPath));
+        //layers.push_back(new Layer(canvas, card.GetFilePath(sourceCardPath)));
+        layers.push_back(textLayer);
+
+
         text.setFont(font);
         text.setFillColor(color);
         //title
@@ -276,14 +335,14 @@ void BatchCards(Canvas& canvas, std::vector<Layer*>& layers)
             text.setCharacterSize(72 * 350 / (int)text.getLocalBounds().width);
         }
         float paddingX = (350 - text.getLocalBounds().width) / 2;
-        float paddingY = (60 - text.getLocalBounds().height) / 2;
+        float paddingY = (90 - text.getLocalBounds().height) / 2;
         text.setPosition(230 + paddingX, 20 + paddingY);
         textLayer->draw(text);
         // value
         text.setString(cards[row][1]);
         text.setCharacterSize(40);
         paddingX = (350 - text.getLocalBounds().width) / 2;
-        paddingY = (40 - text.getLocalBounds().height) / 2;
+        paddingY = (70 - text.getLocalBounds().height) / 2;
         text.setPosition(230 + paddingX, 90 + paddingY);
         textLayer->draw(text);
         // attack
@@ -339,7 +398,7 @@ void BatchCards(Canvas& canvas, std::vector<Layer*>& layers)
         textLayer->draw(text);
 
         textLayer->UpdateRenderTexture();
-        //canvas.Save(layers, "C:\\users\\user\\downloads\\NorseGame\\cards\\" + cards[row][0] + ".png");
+        canvas.Save(layers, "C:\\users\\user\\downloads\\NorseGame\\output\\" + cards[row][0] + ".png");
         for (int i = 0; i < stoi(cards[row][6]); i++)
         {
             // save individual cards
@@ -358,20 +417,20 @@ void BatchCards(Canvas& canvas, std::vector<Layer*>& layers)
         }
         layers.pop_back();
         delete textLayer;
-        textLayer = new Layer(canvas);
-        layers.push_back(textLayer);
+        //textLayer = new Layer(canvas);
+        //layers.push_back(textLayer);
     }
-    Layer* hidden = new Layer(canvas, "C:\\users\\user\\downloads\\NorseGame\\hidden.png");
-    sf::Vector2f hiddenCoord((atlasIndex% atlasCols) * (float)canvas.Width(), atlasIndex / atlasCols * (float)canvas.Height());
-    hidden->SetPosition(hiddenCoord);
-    //hidden->UpdateRenderTexture();
-    rtAtlas->draw(*hidden);
+    //Layer* hidden = new Layer(canvas, "C:\\users\\user\\downloads\\NorseGame\\hidden.png");
+    //sf::Sprite hiddenSprite(hidden->GetTexture());
+    //sf::Vector2f hiddenCoord((atlasIndex% atlasCols) * (float)canvas.Width(), atlasIndex / atlasCols * (float)canvas.Height());
+    //hiddenSprite.setPosition(hiddenCoord);
+    //rtAtlas->draw(hiddenSprite);
 
     rtAtlas->display();
     rtAtlas->getTexture().copyToImage().saveToFile("C:\\users\\user\\downloads\\NorseGame\\atlas.png");
 
     layers.pop_back();
-    delete hidden;
-    delete textLayer;
+    //delete hidden;
+    //delete textLayer;
     delete rtAtlas;
 }
